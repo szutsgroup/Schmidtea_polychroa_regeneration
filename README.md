@@ -1,8 +1,8 @@
 # Schmidtea_polychroa_regeneration
 
-This repository contains supplementary scripts for our S. polychroa genome assembly and regeneration-induced mutagenesis project.
-BioRxiv: ...
-ENA project accession: PRJEB58888
+This repository contains supplementary scripts for our S. polychroa genome assembly and regeneration-induced mutagenesis project.  
+BioRxiv: ...  
+ENA project accession: PRJEB58888  
 
 The folders contain the following:
   * 1_genome assembly & polishing: assembly of PacBio reads with Canu, and Arrow and Pilon polishing steps
