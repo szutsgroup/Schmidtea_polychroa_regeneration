@@ -41,13 +41,13 @@ done
 # d) the mutation is only present in 1-2 samples (to include shared mutations in siblings),
 # also one or two extra sample with some support is allowed (because of possible subclonal presence in regenerants/parents)
 
-Rscript 4_getaf_filter.R --input control_samples_getaf.out \
+Rscript getaf_filter.R --input control_samples_getaf.out \
 --zeromin 5 --zeromax 7 --covmin 25 --covmax 130 --maxsuppmin 7 --minnonzerosupp 1
 
-Rscript 4_getaf_filter.R --input regenerated_samples_getaf.out \
+Rscript getaf_filter.R --input regenerated_samples_getaf.out \
 --zeromin 9 --zeromax 11 --covmin 25 --covmax 130 --maxsuppmin 7 --minnonzerosupp 1
 
-Rscript 4_getaf_filter.R --input parent_samples_getaf.out \
+Rscript getaf_filter.R --input parent_samples_getaf.out \
 --zeromin 5 --zeromax 7 --covmin 25 --covmax 130 --maxsuppmin 7 --minnonzerosupp 1
 
 # these commands result in three sets of filtered positions, which were manually verified in IGV,
