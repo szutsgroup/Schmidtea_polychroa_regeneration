@@ -9,7 +9,7 @@ PCFL="/Projects/Planaria/Transcriptome/trinity_output/trinity_output.Trinity.pcf
 
 OUTDIR="/Projects/Planaria/PacBio/scaffolding/lrna/"
 
-/bin/blat/blat -noHead $ASSEMBLY $PCFL $(basename $ASSEMBLY .fasta).blatout
+/bin/blat/blat -noHead $ASSEMBLY $PCFL ${OUTDIR}/$(basename $ASSEMBLY .fasta).blatout
 
 sh /szutsnas/bin/L_RNA_scaffolder/L_RNA_scaffolder.sh \
 -d /szutsnas/bin/L_RNA_scaffolder/ \
@@ -22,6 +22,8 @@ sh /szutsnas/bin/L_RNA_scaffolder/L_RNA_scaffolder.sh \
 # final filtering by removing scaffolds shorter than 1kb
 # and those that have a GC ratio over 40% (see Fig S1A)
 # ------------------------------------------------------
+
+cd /Projects/Planaria/PacBio/scaffolding/
 
 ASSEMBLY="/Projects/Planaria/PacBio/scaffolding/lrna/L_RNA_Scaffolder.fasta"
 mkdir split
