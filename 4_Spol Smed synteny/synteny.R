@@ -3,38 +3,38 @@ suppressMessages(library(tidyverse))
 # parse GMAP output tables
 # S. mediterranea
 
-cmd = "grep -c '>SM' Projects/Planaria/Synteny/gmap_output/SMEST_on_SMESG.gmap"
-inp = system(cmd, intern = TRUE) %>% as.integer()
+cmd <- "grep -c '>SM' Projects/Planaria/Synteny/gmap_output/SMEST_on_SMESG.gmap"
+inp <- system(cmd, intern = TRUE) %>% as.integer()
 ll <- vector(mode = "list", length = inp)
 
-con = base::file("Projects/Planaria/Synteny/gmap_output/SMEST_on_SMESG.gmap", "r")
-co = 0
+con <- base::file("Projects/Planaria/Synteny/gmap_output/SMEST_on_SMESG.gmap", "r")
+co <- 0
 while ( TRUE ) {
-  line = readLines(con, n = 1)
+  line <- readLines(con, n = 1)
   if ( length(line) == 0 ) {
     break
   }
   if ( grepl(">SM", line) ) {
-    chimarea = FALSE
-    co = co + 1
-    name = gsub(">", "", line)
-    names(ll)[co] = gsub(" .*", "", name)
-    line = readLines(con, n = 1)
-    pathno = substr(line, 8, 23)
+    chimarea <- FALSE
+    co <- co + 1
+    name <- gsub(">", "", line)
+    names(ll)[co] <- gsub(" .*", "", name)
+    line <- readLines(con, n = 1)
+    pathno <- substr(line, 8, 23)
     if (grepl("Possible", pathno) ) {
-      pathno = 2
-      chimarea = TRUE
+      pathno <- 2
+      chimarea <- TRUE
     } else {
-      pathno = min(as.integer(gsub("\\):.*", "", pathno)), 5)
+      pathno <- min(as.integer(gsub("\\):.*", "", pathno)), 5)
     }
     if (pathno > 0) {
-      paths = matrix(NA, nrow = pathno, ncol = 5) %>% as.data.frame()
+      paths <- matrix(NA, nrow = pathno, ncol = 5) %>% as.data.frame()
       names(paths) <- c("Scaffold", "Start", "End", "Cov", "Ori")
-      line2 = readLines(con, n = pathno*10+4)
+      line2 <- readLines(con, n = pathno*10+4)
       if (sum(grepl("Non-intron", line2)) > 0) line2 <- line2[-which(grepl("Non-intron", line2))]
       if (sum(grepl("Translation", line2)) > 0) line2 <- line2[-which(grepl("Translation", line2))]
-      pos_lines = line2[seq(4, pathno*10, 10)]
-      cov_lines = line2[seq(6, pathno*10, 10)]
+      pos_lines <- line2[seq(4, pathno*10, 10)]
+      cov_lines <- line2[seq(6, pathno*10, 10)]
       line2[grepl("strand", line2)] -> ori
       gsub(".*\\(", "", ori) %>% gsub(" strand\\)", "", .) -> paths$Ori
       paths$Cov <- strsplit(cov_lines, split = " ") %>% sapply("[", 6) %>% as.numeric()
@@ -48,7 +48,7 @@ while ( TRUE ) {
     } else {
       paths = NA
     }
-    ll[[co]]$Path_count = pathno
+    ll[[co]]$Path_count <- pathno
     ll[[co]]$Paths <-  paths
     ll[[co]]$Chimaera <- chimarea
     if (co %% 1000 == 0) print(co)
@@ -59,38 +59,38 @@ smed <- ll
 
 # S. polychroa
 
-cmd = "grep -c '>dd' /Projects/Planaria/Synteny/gmap_output/ddSpolv4_on_bmSpolg1.gmap"
-inp = system(cmd, intern = TRUE) %>% as.integer()
+cmd <- "grep -c '>dd' /Projects/Planaria/Synteny/gmap_output/ddSpolv4_on_bmSpolg1.gmap"
+inp <- system(cmd, intern = TRUE) %>% as.integer()
 ll <- vector(mode = "list", length = inp)
 
-con = base::file("/Projects/Planaria/Synteny/gmap_output/ddSpolv4_on_bmSpolg1.gmap", "r")
-co = 0
+con <- base::file("/Projects/Planaria/Synteny/gmap_output/ddSpolv4_on_bmSpolg1.gmap", "r")
+co <- 0
 while ( TRUE ) {
-  line = readLines(con, n = 1)
+  line <- readLines(con, n = 1)
   if ( length(line) == 0 ) {
     break
   }
   if ( grepl(">dd", line) ) {
-    chimarea = FALSE
-    co = co + 1
+    chimarea <- FALSE
+    co <- co + 1
     name = gsub(">", "", line)
-    names(ll)[co] = gsub(" .*", "", name)
-    line = readLines(con, n = 1)
-    pathno = substr(line, 8, 23)
+    names(ll)[co] <- gsub(" .*", "", name)
+    line <- readLines(con, n = 1)
+    pathno <- substr(line, 8, 23)
     if (grepl("Possible", pathno) ) {
-      pathno = 2
-      chimarea = TRUE
+      pathno <- 2
+      chimarea <- TRUE
     } else {
-      pathno = min(as.integer(gsub("\\):.*", "", pathno)), 5)
+      pathno <- min(as.integer(gsub("\\):.*", "", pathno)), 5)
     }
     if (pathno > 0) {
       paths = matrix(NA, nrow = pathno, ncol = 5) %>% as.data.frame()
       names(paths) <- c("Scaffold", "Start", "End", "Cov", "Ori")
-      line2 = readLines(con, n = pathno*10+4)
+      line2<-= readLines(con, n = pathno*10+4)
       if (sum(grepl("Non-intron", line2)) > 0) line2 <- line2[-which(grepl("Non-intron", line2))]
       if (sum(grepl("Translation", line2)) > 0) line2 <- line2[-which(grepl("Translation", line2))]
-      pos_lines = line2[seq(4, pathno*10, 10)]
-      cov_lines = line2[seq(6, pathno*10, 10)]
+      pos_lines <- line2[seq(4, pathno*10, 10)]
+      cov_lines <- line2[seq(6, pathno*10, 10)]
       line2[grepl("strand", line2)] -> ori
       gsub(".*\\(", "", ori) %>% gsub(" strand\\)", "", .) -> paths$Ori
       paths$Cov <- strsplit(cov_lines, split = " ") %>% sapply("[", 6) %>% as.numeric()
@@ -105,10 +105,10 @@ while ( TRUE ) {
 
       paths[,1:3] <- do.call(rbind.data.frame, k)
     } else {
-      paths = NA
+      paths <- NA
     }
 
-    ll[[co]]$Path_count = pathno
+    ll[[co]]$Path_count <- pathno
     ll[[co]]$Paths <-  paths
     ll[[co]]$Chimaera <- chimarea
     if (co %% 1000 == 0) print(co)
@@ -117,12 +117,31 @@ while ( TRUE ) {
 close(con)
 spol <- ll
 
-# read in orthology information parsed previously from PlanMine
-ortho_tab <- read.delim("/Projects/Planaria/Synteny/spol_smed_ortho_tab.txt")
+# parse orthology information from Planmine
+library(InterMineR)
+ortho_tab <- data.frame(SMEST = names(smed), num_Spol_homologs = NA, Spol = NA)
 
-species_list <- c("spol", "smed")
+im <- initInterMine(mine = "https://planmine.mpibpc.mpg.de/planmine")
+queryTxid2Ortho = getTemplateQuery(im = im, name = "ContigID_Orthologue")
+for (i in 1:nrow(ortho_tab)) {
+  queryTxid2Ortho$where[[2]][["value"]] <- ortho_tab$SMEST[i]
+  imres <- runQuery(im, queryTxid2Ortho)
+  candidates <- imres$Contig.homologues.homologue.primaryIdentifier[grep("Spol", imres$Contig.homologues.homologue.primaryIdentifier)]
+  ortho_tab$num_Spol_homologs[i] <- length(candidates)
+  if ( ortho_tab$num_Spol_homologs[i] == 1 ) {
+    ortho_tab$Spol[i] <- candidates
+  } else {
+    c2 <- unique(gsub("_[0-9]$", "", candidates))
+    if (length(c2) == 1) {
+      ortho_tab$Spol[i] <- sort(candidates)[1]
+    }
+  }
+}
 
 # basic function for getting all mapped transcripts on a scaffold together with the homology links 
+# using the previously parsed GMAP files and the PlanMine database
+species_list <- c("spol", "smed")
+
 get_genes_for_scaffold <- function(species, scaffold) {
   get(species)[sapply(get(species), function(x) length(x$Paths) == 5)] -> ret
   ret[sapply(ret, function(x) any(x$Paths$Scaffold == scaffold))] -> ret
