@@ -17,10 +17,10 @@ for (i in 5:length(g)) {
 }
 
 g$Zerosum <- apply(g[,5:length(g)], 1, function(x) sum(x == 0))
-g$afsd <- apply(g[,3:10], 1, function(x) mean(abs((x-mean(x)))))
-g$ZscoreMax <- apply(g[,3:10], 1, function(x) max((x-mean(x))/sd(x)))
+g$afsd <- apply(g[,5:length(g)], 1, function(x) mean(abs((x-mean(x)))))
+g$ZscoreMax <- apply(g[,5:length(g)], 1, function(x) max((x-mean(x))/sd(x)))
 
-pdf(paste0("/Projects/Planaria/Mutations/", gsub("", "", argv$input), "_ploidy.pdf"), width = 20, height = 13)
+pdf(paste0("/Projects/Planaria/Mutations/ploidy/", gsub("_for_ploidy.txt", "", argv$input), "_AFhistogram.pdf"), width = 20, height = 13)
 par(mfrow = c(3, 4))
 for (i in 5:(length(g)-3)) {
   
