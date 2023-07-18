@@ -1,12 +1,13 @@
-library(tidyverse)
+suppressMessages(library(tidyverse))
 
-cmd = "grep -c '>SM' ~/Documents/202202_planaria_paper/spol_smed_synteny/gmap_output/20220909_SMEST_on_SMESG.gmap"
+# parse GMAP output tables
+# S. mediterranea
+
+cmd = "grep -c '>SM' Projects/Planaria/Synteny/gmap_output/SMEST_on_SMESG.gmap"
 inp = system(cmd, intern = TRUE) %>% as.integer()
-
 ll <- vector(mode = "list", length = inp)
 
-
-con = base::file("~/Documents/202202_planaria_paper/spol_smed_synteny/gmap_output/20220909_SMEST_on_SMESG.gmap", "r")
+con = base::file("Projects/Planaria/Synteny/gmap_output/SMEST_on_SMESG.gmap", "r")
 co = 0
 while ( TRUE ) {
   line = readLines(con, n = 1)
@@ -53,19 +54,16 @@ while ( TRUE ) {
     if (co %% 1000 == 0) print(co)
   }
 }
-
-
 close(con)
-
 smed <- ll
 
-cmd = "grep -c '>dd' ~/Desktop/tmp3/bm_Spol_v1_ddSpolv4.gmap"
-inp = system(cmd, intern = TRUE) %>% as.integer()
+# S. polychroa
 
+cmd = "grep -c '>dd' /Projects/Planaria/Synteny/gmap_output/ddSpolv4_on_bmSpolg1.gmap"
+inp = system(cmd, intern = TRUE) %>% as.integer()
 ll <- vector(mode = "list", length = inp)
 
-
-con = base::file("~/Desktop/tmp3/bm_Spol_v1_ddSpolv4.gmap", "r")
+con = base::file("/Projects/Planaria/Synteny/gmap_output/ddSpolv4_on_bmSpolg1.gmap", "r")
 co = 0
 while ( TRUE ) {
   line = readLines(con, n = 1)
@@ -116,17 +114,15 @@ while ( TRUE ) {
     if (co %% 1000 == 0) print(co)
   }
 }
-
-
 close(con)
-
 spol <- ll
 
-# ortho_tab: from the old Planaria environment
-ortho_tab <- read.delim("~/Desktop/tmp3/spol_smed_ortho_tab.txt")
+# read in orthology information parsed previously from PlanMine
+ortho_tab <- read.delim("/Projects/Planaria/Synteny/spol_smed_ortho_tab.txt")
 
 species_list <- c("spol", "smed")
 
+# basic function for getting all mapped transcripts on a scaffold together with the homology links 
 get_genes_for_scaffold <- function(species, scaffold) {
   get(species)[sapply(get(species), function(x) length(x$Paths) == 5)] -> ret
   ret[sapply(ret, function(x) any(x$Paths$Scaffold == scaffold))] -> ret
@@ -168,6 +164,7 @@ get_genes_for_scaffold <- function(species, scaffold) {
   return(ret)
 }
 
+# summarizing table for each Spol scaffold: linked Smed site count & gene count 
 g <- spol[sapply(spol, function(x) all(x$Paths != "NA"))]
 sapply(g, "[[", 2) %>% do.call(rbind.data.frame, .) -> g
 unique(g$Scaffold) ->g
@@ -186,6 +183,7 @@ for (i in g) {
   print(spol_scaf_tab[which(spol_scaf_tab$Scaffold == i),])
 }
 
+# get scaffolds with 2 Smed links
 filter(spol_scaf_tab, Smed_sites == 2)$Scaffold -> h
 scaf_2hit <- data.frame(Scaffold = h, A_count = NA, B_count = NA, Filtered = NA)
 for (i in h) {
@@ -199,7 +197,7 @@ for (i in h) {
   print(scaf_2hit[which(scaf_2hit$Scaffold == i),])
 }
 
-
+# get scaffolds with 3 Smed links
 filter(spol_scaf_tab, Smed_sites == 3)$Scaffold -> h
 scaf_3hit <- data.frame(Scaffold = h, A_count = NA, B_count = NA, C_count = NA, Filtered = NA)
 for (i in h) {
@@ -214,6 +212,7 @@ for (i in h) {
   print(scaf_3hit[which(scaf_3hit$Scaffold == i),])
 }
 
+# get scaffolds with 4 Smed links
 filter(spol_scaf_tab, Smed_sites == 4)$Scaffold -> h
 scaf_4hit <- data.frame(Scaffold = h, A_count = NA, B_count = NA, C_count = NA, D_count = NA, Filtered = NA)
 for (i in h) {
@@ -229,26 +228,4 @@ for (i in h) {
   print(scaf_4hit[which(scaf_4hit$Scaffold == i),])
 }
 
-filter(scaf_3hit, A_count > 1, B_count > 1) %>% pull(Scaffold) -> uu
-for (u in uu) {
-  tmp <- get_genes_for_scaffold("spol", u) %>% filter(n_ratio < .1, Len > 300, !inside)
-  last_sc1 <- filter(tmp, !inside, n_ratio < .1, Len > 300) %>% with(Scaffold.y != lead(Scaffold.y)) %>% which()
-  if (length(last_sc1) > 1) {
-    print(paste0(u, ",not OK,not OK,not OK,not OK,nor OK,not OK,not OK,not OK,nor OK,not OK"))
-    next
-  }
-  a = tmp[last_sc1, "End.x"]
-  b = tmp[last_sc1+1, "Start.x"]
-  sc1 = tmp[last_sc1, "Scaffold.y"]
-  sc2 = tmp[last_sc1+1, "Scaffold.y"]
-  or1 = ifelse(tmp[1, "Start.y"] > tmp[last_sc1, "End.y"], "-", "+")
-  or2 = ifelse(tmp[last_sc1+1, "Start.y"] > tmp[nrow(tmp), "End.y"], "-", "+")
-  tl1 = range(as.numeric(unlist(c(tmp[1:last_sc1, c("Start.y", "End.y")]))))
-  tl1 = tl1[2]-tl1[1]
-  tl2 = range(as.numeric(unlist(c(tmp[(last_sc1+1):nrow(tmp), c("Start.y", "End.y")]))))
-  tl2 = tl2[2]-tl2[1]
-  se1 = tmp[last_sc1, "End.y"]
-  se2 = tmp[last_sc1+1, "Start.y"]
-  print(paste0(u, ",", a, ",", b, ",", sc1, ",", or1, ",", tl1, ",", se1, ",", sc2, ",", or2, ",", tl2, ",", se2))
-}
 
